@@ -114,4 +114,6 @@ Train/
 #h5 file
 checkpoint/*.h5
 
+.ideas/
+
 
