@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 import tensorflow as tf
-from psnr import psnr
+from metrics import psnr, ssim
 
 
 FLAGS = tf.app.flags.FLAGS
@@ -138,11 +138,23 @@ class SRCNN(object):
       label_img = imread(label_path, is_grayscale=True)
       output_img = imread(image_path, is_grayscale=True)
 
+
+      #compute psnr
       bicubic_psnr = psnr(label_img, bicubic_img)
       srcnn_psnr = psnr(label_img, output_img)
 
+      #bicubic_img = bicubic_img.astype(np.float)
+      #output_img = output_img.astype(np.float)
+      #label_img = label_img.astype(np.float)
+      #compute ssim
+      bicubic_ssim = ssim(label_img, bicubic_img)
+      srcnn_ssim = ssim(label_img, output_img)
+
       print("bicubic PSNR: [{}]".format(bicubic_psnr))
       print("SRCNN PSNR: [{}]".format(srcnn_psnr))
+
+      print("bicubic SSIM: [{}]".format(bicubic_ssim))
+      print("SRCNN SSIM: [{}]".format(srcnn_ssim))
 
   def model(self):
     conv1 = tf.nn.relu(tf.nn.conv2d(self.images, self.weights['w1'], strides=[1,1,1,1], padding='VALID') + self.biases['b1'])

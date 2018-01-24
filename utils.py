@@ -13,7 +13,8 @@ import scipy.misc
 import scipy.ndimage
 import numpy as np
 import imageio as io
-import tifffile as tiff
+#import tifffile as tiff
+import cv2
 
 import tensorflow as tf
 
@@ -111,7 +112,7 @@ def imread(path, is_grayscale=True):
     #if len(img.shape) == 3:
     #  return scipy.misc.imread(path, flatten=True, mode='YCbCr').astype(np.float) #ret
     #else:
-    return tiff.imread(path)
+    return cv2.imread(path, flags= -1)
   else:
     return scipy.misc.imread(path,  mode='YCbCr').astype(np.float)
 
@@ -199,8 +200,8 @@ def input_setup(sess, config):
     image_path = './sample'
     ori_img_path = os.path.join(image_path, "test_ori_img.tiff")
     bicubic_img_path = os.path.join(image_path, "test_bicubic_img.tiff")
-    imsave(label_[padding:padding + config.stride * nx, padding:padding + config.stride * ny], ori_img_path)
-    imsave(input_[padding:padding + config.stride * nx, padding:padding + config.stride * ny], bicubic_img_path)
+    imsave((label_[padding:padding + config.stride * nx, padding:padding + config.stride * ny]*65535.).astype(np.uint16), ori_img_path)
+    imsave((input_[padding:padding + config.stride * nx, padding:padding + config.stride * ny]*65535.).astype(np.uint16), bicubic_img_path)
 
   """
   len(sub_input_sequence) : the number of sub_input (33 x 33 x ch) in one image
@@ -223,7 +224,7 @@ def input_setup(sess, config):
     return nx, ny
     
 def imsave(image, path):
-  return tiff.imsave(path, image) #io.imwrite(path, image)#scipy.misc.imsave(path, image)
+  return cv2.imwrite(path, image)#scipy.misc.imsave(path, image)
 
 def merge(images, size):
   h, w = images.shape[1], images.shape[2]

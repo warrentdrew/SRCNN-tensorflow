@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import imageio as io
 
-import tifffile as tiff
+#import tifffile as tiff
 
 path1 = './Test/CT/usb.tiff'
 
