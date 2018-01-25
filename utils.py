@@ -172,7 +172,8 @@ def input_setup(sess, config):
           sub_label_sequence.append(sub_label)
 
   else:
-    input_, label_ = preprocess(data[0], config.scale)
+    img_name = os.path.splitext(os.path.basename(data[2]))[0]
+    input_, label_ = preprocess(data[2], config.scale)
 
     if len(input_.shape) == 3:
       h, w, _ = input_.shape
@@ -198,8 +199,8 @@ def input_setup(sess, config):
       # this part needs to be added to save the original SR image and the bicubic image for later testing purpose
     print("Saving the original images... size: [{} X {}]".format(config.stride*nx, config.stride*ny))
     image_path = './sample'
-    ori_img_path = os.path.join(image_path, "test_ori_img.tiff")
-    bicubic_img_path = os.path.join(image_path, "test_bicubic_img.tiff")
+    ori_img_path = os.path.join(image_path, "test_ori_" + img_name + ".tiff")
+    bicubic_img_path = os.path.join(image_path, "test_bicubic_" + img_name + ".tiff")
     imsave((label_[padding:padding + config.stride * nx, padding:padding + config.stride * ny]*65535.).astype(np.uint16), ori_img_path)
     imsave((input_[padding:padding + config.stride * nx, padding:padding + config.stride * ny]*65535.).astype(np.uint16), bicubic_img_path)
 
@@ -221,7 +222,7 @@ def input_setup(sess, config):
   make_data(sess, arrdata, arrlabel)
 
   if not config.is_train:
-    return nx, ny
+    return nx, ny, img_name
     
 def imsave(image, path):
   return cv2.imwrite(path, image)#scipy.misc.imsave(path, image)

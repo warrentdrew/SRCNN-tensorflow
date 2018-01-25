@@ -70,7 +70,7 @@ class SRCNN(object):
     if config.is_train:
       input_setup(self.sess, config)
     else:
-      nx, ny = input_setup(self.sess, config)
+      nx, ny, img_name = input_setup(self.sess, config)
 
     if config.is_train:     
       data_dir = os.path.join('./{}'.format(config.checkpoint_dir), "train.h5")
@@ -127,12 +127,12 @@ class SRCNN(object):
 
       #print("res is:", result[0:5,0:5])
       output_path = os.path.join(os.getcwd(), config.sample_dir)
-      image_path = os.path.join(output_path, "test_srcnn_image.tiff") #changed from png
+      image_path = os.path.join(output_path, "test_srcnn_" + img_name + ".tiff") #changed from png
       imsave(result, image_path)
 
       # this part added for directly comparing the PSNR
-      label_path = os.path.join(output_path, "test_ori_img.tiff")
-      bicubic_path = os.path.join(output_path, "test_bicubic_img.tiff")
+      label_path = os.path.join(output_path, "test_ori_" + img_name + ".tiff")
+      bicubic_path = os.path.join(output_path, "test_bicubic_" + img_name + ".tiff")
 
       bicubic_img = imread(bicubic_path, is_grayscale= True)
       label_img = imread(label_path, is_grayscale=True)
@@ -150,11 +150,11 @@ class SRCNN(object):
       bicubic_ssim = ssim(label_img, bicubic_img)
       srcnn_ssim = ssim(label_img, output_img)
 
-      print("bicubic PSNR: [{}]".format(bicubic_psnr))
-      print("SRCNN PSNR: [{}]".format(srcnn_psnr))
+      print("bicubic PSNR for " + img_name + ": [{}]".format(bicubic_psnr))
+      print("SRCNN PSNR for " + img_name + ": [{}]".format(srcnn_psnr))
 
-      print("bicubic SSIM: [{}]".format(bicubic_ssim))
-      print("SRCNN SSIM: [{}]".format(srcnn_ssim))
+      print("bicubic SSIM for " + img_name + ": [{}]".format(bicubic_ssim))
+      print("SRCNN SSIM for" + img_name + ": [{}]".format(srcnn_ssim))
 
   def model(self):
     conv1 = tf.nn.relu(tf.nn.conv2d(self.images, self.weights['w1'], strides=[1,1,1,1], padding='VALID') + self.biases['b1'])
